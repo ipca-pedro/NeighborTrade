@@ -269,7 +269,7 @@ Para contribuir:
 2. Crie uma branch para sua feature
 3. Faça commit das alterações
 4. Faça push para a branch
-5. Abra um Pull Request - Negócios e Trocas
+5. Abra um Pull Request
 
 ## Configuração do Ambiente de Desenvolvimento
 
@@ -282,9 +282,9 @@ Para contribuir:
 
 ### Configuração Passo a Passo
 
-1. **Clonar o Projeto**
+1. **Clonar o Projeto na pasta C:\xampp\htdocs**
 ```bash
-git clone [URL_DO_REPOSITÓRIO]
+git clone https://github.com/ipca-pedro/NeighborTrade
 cd NT
 ```
 
