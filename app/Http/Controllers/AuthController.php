@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Utilizador;
-use App\Models\Imagem;
 use App\Models\Morada;
+use App\Models\Imagem;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -38,19 +38,21 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'Name' => 'required|string|max:255',
-            'User_Name' => 'required|string|max:255|unique:utilizador',
-            'Email' => 'required|string|email|max:255|unique:utilizador',
-            'Password' => 'required|string|min:8|confirmed',
-            'Data_Nascimento' => 'required|date',
-            'CC' => 'required|integer|unique:utilizador',
-            'comprovativo_morada' => 'required|file|mimes:jpeg,png,jpg,pdf|max:2048'
+            'user_name' => 'required|string|max:255|unique:utilizador,User_Name',
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:utilizador,Email',
+            'password' => 'required|string|min:8|confirmed',
+            'cc' => 'required|integer|unique:utilizador,CC',
+            'data_nascimento' => 'required|date',
+            'rua' => 'required|string',
+            'foto_perfil' => 'required|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
-        // Processar o upload do comprovativo de morada
-        if ($request->hasFile('comprovativo_morada')) {
-            $file = $request->file('comprovativo_morada');
-            $filename = time() . '_' . $file->getClientOriginalName();
+        DB::beginTransaction();
+        try {
+            // 1.1 Criar morada
+            $morada = Morada::create([
+                'Rua' => $request->rua
             $path = $file->storeAs('public/comprovativos', $filename);
 
             // Criar registro na tabela imagem
@@ -76,8 +78,8 @@ class AuthController extends Controller
             'CC' => $request->CC,
             'MoradaID_Morada' => $morada->ID_Morada,
             'ImagemID_Imagem' => $imagem->ID_Imagem,
-            'Status_UtilizadorID_status_utilizador' => 1, // Status padrão
-            'TipoUserID_TipoUser' => 1 // Tipo de usuário padrão
+            'Status_UtilizadorID_status_utilizador' => 1, // Status pendente
+            'TipoUserID_TipoUser' => 1 // Tipo usuário normal
         ]);
 
         $user->save();
@@ -100,9 +102,48 @@ class AuthController extends Controller
         ]);
     }
 
-    public function me(Request $request)
+    public function me()
     {
-        return response()->json($request->user());
+        return response()->json(Auth::user());
     }
-}
+
+    public function verifyEmail($token)
+    {
+        $user = Utilizador::where('verification_token', $token)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Token de verificação inválido'], 400);
+        }
+
+        if ($user->email_verified_at) {
+            return response()->json(['message' => 'Email já verificado'], 400);
+        }
+
+        $user->email_verified_at = now();
+        $user->verification_token = null;
+        $user->save();
+
+        return response()->json(['message' => 'Email verificado com sucesso']);
+    }
+
+    public function resendVerification(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:utilizador,Email'
+        ]);
+
+        $user = Utilizador::where('Email', $request->email)->first();
+
+        if ($user->email_verified_at) {
+            return response()->json(['message' => 'Email já verificado'], 400);
+        }
+
+        $verificationToken = Str::random(64);
+        $user->verification_token = $verificationToken;
+        $user->save();
+
+        Mail::to($user->Email)->send(new VerifyEmail($user, $verificationToken));
+
+        return response()->json(['message' => 'Email de verificação reenviado']);
+    }
 }

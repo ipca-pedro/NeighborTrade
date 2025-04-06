@@ -36,54 +36,63 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Anuncio extends Model
 {
-	protected $table = 'anuncio';
-	protected $primaryKey = 'ID_Anuncio';
-	public $timestamps = false;
+    protected $table = 'anuncio';
+    protected $primaryKey = 'ID_Anuncio';
+    public $timestamps = false;
 
-	protected $casts = [
-		'Preco' => 'float',
-		'UtilizadorID_User' => 'int',
-		'AprovacaoID_aprovacao' => 'int',
-		'Tipo_ItemID_Tipo' => 'int',
-		'CategoriaID_Categoria' => 'int',
-		'Status_AnuncioID_Status_Anuncio' => 'int'
-	];
+    protected $casts = [
+        'preco' => 'float',
+        'UtilizadorID_User' => 'int',
+        'AprovacaoID_aprovacao' => 'int',
+        'Tipo_ItemID_Tipo' => 'int',
+        'Status_AnuncioID_Status_Anuncio' => 'int'
+    ];
 
-	protected $fillable = [
-		'Titulo',
-		'Descricao',
-		'Preco',
-		'UtilizadorID_User',
-		'AprovacaoID_aprovacao',
-		'Tipo_ItemID_Tipo',
-		'CategoriaID_Categoria',
-		'Status_AnuncioID_Status_Anuncio'
-	];
+    protected $fillable = [
+        'titulo',
+        'descricao',
+        'preco',
+        'UtilizadorID_User',
+        'AprovacaoID_aprovacao',
+        'Tipo_ItemID_Tipo',
+        'CategoriaID_Categoria',
+        'Status_AnuncioID_Status_Anuncio'
+    ];
 
-	public function aprovacao()
-	{
-		return $this->belongsTo(Aprovacao::class, 'AprovacaoID_aprovacao');
-	}
+    public function vendedor()
+    {
+        return $this->belongsTo(Utilizador::class, 'UtilizadorID_User', 'ID_User');
+    }
 
-	public function tipo_item()
-	{
-		return $this->belongsTo(TipoItem::class, 'Tipo_ItemID_Tipo');
-	}
+    public function imagens()
+    {
+        return $this->belongsToMany(Imagem::class, 'item_imagem', 'ItemID_Item', 'ImagemID_Imagem');
+    }
 
-	public function status_anuncio()
-	{
-		return $this->belongsTo(StatusAnuncio::class, 'Status_AnuncioID_Status_Anuncio');
-	}
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class, 'CategoriaID_Categoria', 'ID_Categoria');
+    }
 
-	public function categorium()
-	{
-		return $this->belongsTo(Categorium::class, 'CategoriaID_Categoria');
-	}
+    public function tipoItem()
+    {
+        return $this->belongsTo(TipoItem::class, 'Tipo_ItemID_Tipo', 'ID_Tipo');
+    }
 
-	public function utilizador()
-	{
-		return $this->belongsTo(Utilizador::class, 'UtilizadorID_User');
-	}
+    public function status()
+    {
+        return $this->belongsTo(StatusAnuncio::class, 'Status_AnuncioID_Status_Anuncio', 'ID_Status_Anuncio');
+    }
+
+    public function aprovacao()
+    {
+        return $this->belongsTo(Aprovacao::class, 'AprovacaoID_aprovacao', 'ID_aprovacao');
+    }
+
+    public function utilizador()
+    {
+        return $this->belongsTo(Utilizador::class, 'UtilizadorID_User');
+    }
 
 	public function compras()
 	{
