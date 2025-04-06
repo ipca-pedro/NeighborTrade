@@ -38,6 +38,9 @@ php artisan key:generate
 # DB_USERNAME=root
 # DB_PASSWORD=
 
+# Criar link simbólico para storage
+php artisan storage:link
+
 # Executar migrações
 php artisan migrate
 ```
@@ -49,6 +52,9 @@ cd frontend
 
 # Instalar dependências
 npm install
+
+# Instalar dependências adicionais
+npm install react-router-dom react-bootstrap bootstrap axios
 ```
 
 5. **Iniciar o Projeto**
@@ -68,9 +74,73 @@ npm start
 - `app/` - Backend Laravel
   - `Http/Controllers/` - Controladores
   - `Models/` - Modelos do banco de dados
+  - `storage/app/public/comprovativos/` - Arquivos de comprovativo de morada
 - `frontend/` - Frontend React
-  - `src/components/` - Componentes React
+  - `src/components/auth/` - Componentes de autenticação
   - `src/services/` - Serviços e chamadas API
+
+### Dependências
+
+#### Backend (Laravel)
+```json
+{
+    "require": {
+        "php": "^8.1",
+        "laravel/framework": "^10.0",
+        "laravel/sanctum": "^3.2"
+    }
+}
+```
+
+#### Frontend (React)
+```json
+{
+    "dependencies": {
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-router-dom": "^6.0.0",
+        "react-bootstrap": "^2.0.0",
+        "bootstrap": "^5.0.0",
+        "axios": "^1.0.0"
+    }
+}
+```
+
+### Funcionalidades Implementadas
+
+#### Backend
+1. Sistema de Autenticação
+   - Login com token JWT
+   - Registro com upload de comprovativo de morada
+   - Logout
+   - Rota protegida para dados do usuário
+
+2. Modelos de Dados
+   - Utilizador (User)
+   - Morada (Address)
+   - Imagem (Image)
+
+3. Armazenamento de Arquivos
+   - Upload de comprovativos de morada
+   - Suporte para imagens (JPEG, PNG, JPG) e PDF
+   - Armazenamento em storage/app/public/comprovativos
+
+#### Frontend
+1. Páginas de Autenticação
+   - Login (/login)
+   - Registro (/register)
+   - Redirecionamento automático
+
+2. Componentes React
+   - Formulários com validação
+   - Preview de imagens
+   - Mensagens de erro
+   - Integração com Bootstrap
+
+3. Serviços
+   - Integração com API Laravel
+   - Gerenciamento de tokens
+   - Upload de arquivos
 
 ### Endpoints da API
 
