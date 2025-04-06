@@ -11,9 +11,9 @@
 
 ### Configuração Passo a Passo
 
-1. **Clonar o Projeto**
+1. **Clonar o Projeto na pasta C:\xampp\htdocs**
 ```bash
-git clone [URL_DO_REPOSITÓRIO]
+git clone https://github.com/ipca-pedro/NeighborTrade
 cd NT
 ```
 
