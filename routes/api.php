@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ProdutoController;
+use App\Http\Controllers\AnuncioController;
 use Illuminate\Support\Facades\Route;
 
 // Rotas públicas
@@ -16,6 +17,13 @@ Route::post('/auth/resend-verification', [AuthController::class, 'resendVerifica
 // Rotas públicas de produtos
 Route::get('/produtos', [ProdutoController::class, 'index']);
 Route::get('/produtos/{id}', [ProdutoController::class, 'show']);
+
+// Rotas públicas de anúncios
+Route::get('/anuncios', [AnuncioController::class, 'index']);
+Route::get('/anuncios/buscar', [AnuncioController::class, 'buscar']);
+Route::get('/anuncios/tipo/{tipoId}', [AnuncioController::class, 'porTipo']);
+Route::get('/anuncios/categoria/{categoriaId}', [AnuncioController::class, 'porCategoria']);
+Route::get('/anuncios/{id}', [AnuncioController::class, 'show']);
 
 // Rotas protegidas
 Route::middleware('auth:sanctum')->group(function () {

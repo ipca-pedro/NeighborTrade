@@ -16,10 +16,49 @@ class AnuncioController extends Controller
         // Query usando Eloquent
         $anuncios = Anuncio::with(['vendedor', 'imagens', 'categoria'])
             ->where('Status_AnuncioID_Status_Anuncio', 1) // Status Ativo
-            ->orderBy('ID_Anuncio', 'desc')
+            ->inRandomOrder() // Ordem aleatória
+            ->take(10) // Limita a 10 anúncios
             ->get();
 
         return response()->json($anuncios);
+    }
+
+    // Buscar anúncios por tipo (produto ou serviço)
+    public function porTipo($tipoId)
+    {
+        $anuncios = Anuncio::with(['vendedor', 'imagens', 'categoria'])
+            ->where('Tipo_ItemID_Tipo', $tipoId)
+            ->where('Status_AnuncioID_Status_Anuncio', 1) // Status Ativo
+            ->inRandomOrder() // Ordem aleatória
+            ->take(6) // Limita a 6 anúncios
+            ->get();
+
+        return response()->json($anuncios);
+    }
+
+    // Buscar anúncios por termo de busca
+    public function buscar(Request $request)
+    {
+        $termo = $request->query('q');
+
+        if (empty($termo)) {
+            return response()->json(['message' => 'Termo de busca não fornecido'], 400);
+        }
+
+        $anuncios = Anuncio::with(['vendedor', 'imagens', 'categoria'])
+            ->where('Status_AnuncioID_Status_Anuncio', 1) // Apenas ativos
+            ->where(function($query) use ($termo) {
+                $query->where('Titulo', 'like', '%' . $termo . '%')
+                      ->orWhere('Descricao', 'like', '%' . $termo . '%');
+            })
+            ->orderBy('ID_Anuncio', 'desc')
+            ->get();
+
+        return response()->json([
+            'termo' => $termo,
+            'resultados' => $anuncios,
+            'total' => count($anuncios)
+        ]);
     }
 
     // Buscar um anúncio específico
@@ -186,22 +225,6 @@ class AnuncioController extends Controller
             AND a.Status_AnuncioID_Status_Anuncio = 1
             ORDER BY a.ID_Anuncio DESC
         ', [$vendedorId]);
-
-        return response()->json($anuncios);
-    }
-}
-    {
-        $anuncios = DB::select('
-            SELECT a.*, u.Name as vendedor_nome, 
-                   (SELECT Caminho FROM imagem i 
-                    JOIN item_imagem ii ON i.ID_Imagem = ii.ImagemID_Imagem 
-                    WHERE ii.ItemID_Item = a.ID_Anuncio LIMIT 1) as imagem_principal
-            FROM anuncio a
-            JOIN utilizador u ON a.UtilizadorID_User = u.ID_User
-            WHERE a.CategoriaID_Categoria = ? 
-            AND a.Status_AnuncioID_Status_Anuncio = 1
-            ORDER BY a.ID_Anuncio DESC
-        ', [$categoriaId]);
 
         return response()->json($anuncios);
     }
