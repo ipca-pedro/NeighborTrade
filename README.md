@@ -1,4 +1,4 @@
-# NT - Negócios e Trocas
+# NT - NeighborTrade
 
 ## Configuração do Ambiente de Desenvolvimento
 
