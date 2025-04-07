@@ -2,6 +2,132 @@
 
 Plataforma para compra, venda e troca de produtos/serviços com sistema de aprovação.
 
+## Testando a API
+
+### Pré-requisitos
+- PHP >= 8.0
+- Composer
+- MySQL
+- Postman (ou similar para testar APIs)
+
+### Configuração do Ambiente
+1. Clone o repositório
+2. Execute `composer install`
+3. Configure o arquivo `.env` com suas credenciais do banco de dados
+4. Execute as migrations: `php artisan migrate`
+5. Inicie o servidor: `php artisan serve`
+
+### Endpoints Disponíveis
+
+#### Anúncios
+1. **Listar Anúncios**
+   - Método: GET
+   - URL: `/api/anuncios`
+   - Descrição: Retorna lista de anúncios em destaque
+
+2. **Buscar Anúncios**
+   - Método: GET
+   - URL: `/api/anuncios/buscar?q=termo`
+   - Descrição: Busca anúncios por título ou descrição
+
+3. **Anúncios por Tipo**
+   - Método: GET
+   - URL: `/api/anuncios/tipo/{tipoId}`
+   - Descrição: Lista anúncios por tipo (1: Produto, 2: Serviço)
+
+4. **Anúncios por Categoria**
+   - Método: GET
+   - URL: `/api/anuncios/categoria/{categoriaId}`
+   - Descrição: Lista anúncios de uma categoria específica
+
+5. **Detalhes do Anúncio**
+   - Método: GET
+   - URL: `/api/anuncios/{id}`
+   - Descrição: Retorna detalhes de um anúncio específico
+
+### Como Testar
+
+1. **Usando Postman**
+   - Abra o Postman
+   - Crie uma nova requisição
+   - Selecione o método (GET, POST, etc)
+   - Digite a URL (ex: `http://localhost:8000/api/anuncios`)
+   - Clique em Send
+
+2. **Usando cURL**
+   ```bash
+   # Listar anúncios
+   curl http://localhost:8000/api/anuncios
+
+   # Buscar anúncios
+   curl http://localhost:8000/api/anuncios/buscar?q=computador
+
+   # Anúncios por tipo
+   curl http://localhost:8000/api/anuncios/tipo/1
+   ```
+
+3. **Usando o Navegador**
+   - Para endpoints GET, você pode simplesmente acessar a URL no navegador
+   - Ex: `http://localhost:8000/api/anuncios`
+
+### Respostas da API
+
+- **Sucesso**: Status 200 com JSON dos dados
+- **Erro de Validação**: Status 400 com mensagem de erro
+- **Não Encontrado**: Status 404 com mensagem
+- **Erro do Servidor**: Status 500 com mensagem
+
+### Exemplos de Resposta
+
+```json
+// GET /api/anuncios
+{
+    "data": [
+        {
+            "ID_Item": 1,
+            "Titulo": "Notebook Dell",
+            "Descricao": "Notebook em ótimo estado",
+            "Preco": 2500.00,
+            "vendedor": {
+                "Name": "João Silva"
+            },
+            "imagens": [
+                {
+                    "Caminho": "produtos/notebook.jpg"
+                }
+            ]
+        }
+    ]
+}
+
+// GET /api/anuncios/buscar?q=notebook
+{
+    "termo": "notebook",
+    "resultados": [...],
+    "total": 5
+}
+```
+
+### Dicas de Teste
+
+1. **Teste diferentes cenários**:
+   - Busca com termo vazio
+   - Busca com termo inválido
+   - Categoria inexistente
+   - ID de anúncio inválido
+
+2. **Verifique os headers**:
+   - Content-Type deve ser application/json
+   - Verifique códigos de status HTTP
+
+3. **Teste paginação e limites**:
+   - Grande volume de resultados
+   - Diferentes ordenações
+
+4. **Teste campos obrigatórios**:
+   - Envio de dados incompletos
+   - Formatos inválidos
+
 ## Controllers e Endpoints
 
 ### 1. AuthController - Autenticação
