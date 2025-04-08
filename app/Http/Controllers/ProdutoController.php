@@ -58,7 +58,7 @@ class ProdutoController extends Controller
             'Categoria' => $request->Categoria,
             'Condicao' => $request->Condicao,
             'Status' => 'pendente',
-            'UtilizadorID' => Auth::id()
+            'UtilizadorID_User' => Auth::id()
         ]);
 
         if ($request->hasFile('imagens')) {
@@ -66,7 +66,7 @@ class ProdutoController extends Controller
                 $path = $imagem->store('produtos', 'public');
                 
                 ImagemProduto::create([
-                    'ProdutoID' => $produto->id,
+                    'ProdutoID_Produto' => $produto->ID_Produto,
                     'Url' => $path,
                     'Principal' => $index === 0 // primeira imagem é a principal
                 ]);
@@ -85,7 +85,7 @@ class ProdutoController extends Controller
         $produto = Produto::findOrFail($id);
 
         // Verificar se o usuário é dono do produto
-        if ($produto->UtilizadorID !== Auth::id()) {
+        if ($produto->UtilizadorID_User !== Auth::id()) {
             return response()->json([
                 'message' => 'Não autorizado'
             ], 403);
@@ -116,7 +116,7 @@ class ProdutoController extends Controller
                 $path = $imagem->store('produtos', 'public');
                 
                 ImagemProduto::create([
-                    'ProdutoID' => $produto->id,
+                    'ProdutoID_Produto' => $produto->ID_Produto,
                     'Url' => $path,
                     'Principal' => $index === 0
                 ]);
@@ -157,7 +157,7 @@ class ProdutoController extends Controller
         $produto = Produto::findOrFail($id);
 
         // Verificar se o usuário é dono do produto
-        if ($produto->UtilizadorID !== Auth::id()) {
+        if ($produto->UtilizadorID_User !== Auth::id()) {
             return response()->json([
                 'message' => 'Não autorizado'
             ], 403);

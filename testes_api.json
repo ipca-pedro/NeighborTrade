@@ -1,0 +1,146 @@
+{
+  "endpoints": {
+    "auth": {
+      "login": {
+        "url": "http://localhost/NT/public/api/auth/login",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        "body": {
+          "Email": "usuario@example.com",
+          "Password": "senha123"
+        }
+      },
+      "register": {
+        "url": "http://localhost/NT/public/api/auth/register",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "multipart/form-data",
+          "Accept": "application/json"
+        },
+        "body": {
+          "Name": "João Silva",
+          "User_Name": "joaosilva",
+          "Email": "joao.silva@example.com",
+          "Password": "senha123",
+          "Password_confirmation": "senha123",
+          "Data_Nascimento": "1990-01-01",
+          "MoradaID_Morada": 1,
+          "comprovativo_morada": "[arquivo]"
+        }
+      },
+      "logout": {
+        "url": "http://localhost/NT/public/api/auth/logout",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer [token]"
+        }
+      }
+    },
+    "moradas": {
+      "test": {
+        "url": "http://localhost/NT/public/api/moradas/test",
+        "method": "GET",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        }
+      },
+      "listar": {
+        "url": "http://localhost/NT/public/api/moradas",
+        "method": "GET",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        }
+      },
+      "criar": {
+        "url": "http://localhost/NT/public/api/moradas",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        "body": {
+          "Rua": "Avenida da Universidade"
+        }
+      }
+    },
+    "produtos": {
+      "listar": {
+        "url": "http://localhost/NT/public/api/produtos",
+        "method": "GET",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        }
+      },
+      "detalhe": {
+        "url": "http://localhost/NT/public/api/produtos/1",
+        "method": "GET",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        }
+      }
+    },
+    "anuncios": {
+      "listar": {
+        "url": "http://localhost/NT/public/api/anuncios",
+        "method": "GET",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        }
+      },
+      "detalhe": {
+        "url": "http://localhost/NT/public/api/anuncios/1",
+        "method": "GET",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        }
+      },
+      "procurar": {
+        "url": "http://localhost/NT/public/api/anuncios/procurar?termo=bicicleta",
+        "method": "GET",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        }
+      }
+    },
+    "perfil": {
+      "obter": {
+        "url": "http://localhost/NT/public/api/perfil",
+        "method": "GET",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer [token]"
+        }
+      },
+      "atualizar": {
+        "url": "http://localhost/NT/public/api/perfil",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "multipart/form-data",
+          "Accept": "application/json",
+          "Authorization": "Bearer [token]"
+        },
+        "body": {
+          "Name": "João Silva Atualizado",
+          "User_Name": "joaosilva",
+          "Email": "joao.silva@example.com",
+          "Data_Nascimento": "1990-01-01",
+          "MoradaID_Morada": 1,
+          "imagem_perfil": "[arquivo]"
+        }
+      }
+    }
+  }
+}

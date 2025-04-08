@@ -1,6 +1,6 @@
 # NeighborTrade - Sistema de Negócios e Trocas
 
-Plataforma para compra, venda e troca de produtos/serviços com sistema de aprovação.
+Plataforma para compra, venda e troca de produtos/serviços com sistema de aprovação entre vizinhos.
 
 ## Testando a API
 
@@ -8,16 +8,52 @@ Plataforma para compra, venda e troca de produtos/serviços com sistema de aprov
 - PHP >= 8.0
 - Composer
 - MySQL
+- Node.js e npm (para o frontend)
 - Postman (ou similar para testar APIs)
 
 ### Configuração do Ambiente
 1. Clone o repositório
-2. Execute `composer install`
+2. Execute `composer install` na pasta raiz
 3. Configure o arquivo `.env` com suas credenciais do banco de dados
 4. Execute as migrations: `php artisan migrate`
-5. Inicie o servidor: `php artisan serve`
+5. Inicie o servidor backend: `php artisan serve`
+6. Para o frontend, navegue até a pasta `frontend` e execute:
+   - `npm install`
+   - `npm start`
+
+### Estrutura do Projeto
+- **Backend**: Laravel (PHP)
+- **Frontend**: React.js
+- **Banco de Dados**: MySQL
 
 ### Endpoints Disponíveis
+
+#### Autenticação
+1. **Registo de Utilizador**
+   - Método: POST
+   - URL: `/api/auth/register`
+   - Descrição: Regista um novo utilizador no sistema
+
+2. **Login**
+   - Método: POST
+   - URL: `/api/auth/login`
+   - Descrição: Autentica um utilizador e retorna um token
+
+3. **Logout**
+   - Método: POST
+   - URL: `/api/auth/logout`
+   - Descrição: Termina a sessão do utilizador
+
+#### Moradas
+1. **Listar Moradas**
+   - Método: GET
+   - URL: `/api/moradas`
+   - Descrição: Retorna todas as moradas disponíveis para registo
+
+2. **Criar Morada**
+   - Método: POST
+   - URL: `/api/moradas`
+   - Descrição: Adiciona uma nova morada ao sistema
 
 #### Anúncios
 1. **Listar Anúncios**
@@ -25,9 +61,9 @@ Plataforma para compra, venda e troca de produtos/serviços com sistema de aprov
    - URL: `/api/anuncios`
    - Descrição: Retorna lista de anúncios em destaque
 
-2. **Buscar Anúncios**
+2. **Procurar Anúncios**
    - Método: GET
-   - URL: `/api/anuncios/buscar?q=termo`
+   - URL: `/api/anuncios/procurar?termo=termo`
    - Descrição: Busca anúncios por título ou descrição
 
 3. **Anúncios por Tipo**
@@ -47,8 +83,9 @@ Plataforma para compra, venda e troca de produtos/serviços com sistema de aprov
 
 ### Como Testar
 
-1. **Usando Postman**
-   - Abra o Postman
+1. **Usando o Arquivo de Testes JSON**
+   - Um arquivo `testes_api.json` foi criado na raiz do projeto com exemplos de requisições para todos os endpoints
+   - Importe este arquivo no Postman para testar rapidamente a API
    - Crie uma nova requisição
    - Selecione o método (GET, POST, etc)
    - Digite a URL (ex: `http://localhost:8000/api/anuncios`)

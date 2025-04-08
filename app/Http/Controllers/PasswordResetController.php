@@ -38,6 +38,13 @@ class PasswordResetController extends Controller
 
         // Enviar email
         // TODO: Implementar envio de email com o token
+        // Exemplo de código para envio de email (requer configuração do serviço de email)
+        /*
+        Mail::send('emails.reset_password', ['token' => $token], function($message) use ($user) {
+            $message->to($user->Email);
+            $message->subject('Recuperação de Senha');
+        });
+        */
 
         return response()->json([
             'message' => 'Se o email existir, enviaremos um link de recuperação'

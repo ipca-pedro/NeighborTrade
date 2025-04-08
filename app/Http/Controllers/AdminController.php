@@ -20,6 +20,11 @@ class AdminController extends Controller
             }
             return $next($request);
         });
+    }
+    
+    // Listar usuários pendentes
+    public function listPendingUsers()
+    {
         $pendingUsers = Utilizador::where('Status_UtilizadorID_status_utilizador', 1) // 1 = Pendente
             ->with(['morada', 'imagem'])
             ->get();
@@ -29,10 +34,7 @@ class AdminController extends Controller
 
     public function approveUser(Request $request, $id)
     {
-        // Verificar se o usuário é admin
-        if (Auth::user()->TipoUserID_TipoUser !== 2) {
-            return response()->json(['message' => 'Não autorizado'], 403);
-        }
+        // O middleware no construtor já verifica se é admin, então esta verificação é redundante
 
         $user = Utilizador::find($id);
 
@@ -49,10 +51,7 @@ class AdminController extends Controller
 
     public function rejectUser(Request $request, $id)
     {
-        // Verificar se o usuário é admin
-        if (Auth::user()->TipoUserID_TipoUser !== 2) {
-            return response()->json(['message' => 'Não autorizado'], 403);
-        }
+        // O middleware no construtor já verifica se é admin, então esta verificação é redundante
 
         $user = Utilizador::find($id);
 

@@ -36,8 +36,8 @@ class AnuncioController extends Controller
         return response()->json($anuncios);
     }
 
-    // Buscar anúncios por termo de busca
-    public function buscar(Request $request)
+    // Procurar anúncios por termo de pesquisa
+    public function procurar(Request $request)
     {
         $termo = $request->query('q');
 
@@ -93,20 +93,30 @@ class AnuncioController extends Controller
     // Criar novo anúncio
     public function store(Request $request)
     {
+        // Validar dados
+        $request->validate([
+            'titulo' => 'required|string|max:255',
+            'descricao' => 'required|string',
+            'preco' => 'required|numeric|min:0',
+            'categoria' => 'required|integer|exists:categoria,ID_Categoria',
+            'tipo' => 'required|integer|in:1,2', // 1: Produto, 2: Serviço
+            'imagens.*' => 'image|mimes:jpeg,png,jpg|max:2048' // Máx 2MB por imagem
+        ]);
+
         // Começar uma transação
         DB::beginTransaction();
 
         try {
-            // Inserir anúncio
-            $anuncioId = DB::table('anuncio')->insertGetId([
-                'titulo' => $request->titulo,
-                'descricao' => $request->descricao,
-                'preco' => $request->preco,
-                'UtilizadorID_User' => Auth::id(),
-                'CategoriaID_Categoria' => $request->categoria,
-                'Tipo_ItemID_Tipo' => $request->tipo,
-                'Status_AnuncioID_Status_Anuncio' => 2 // Status Pendente
-            ]);
+            // Criar anúncio
+            $anuncio = new Anuncio();
+            $anuncio->Titulo = $request->titulo;
+            $anuncio->Descricao = $request->descricao;
+            $anuncio->Preco = $request->preco;
+            $anuncio->UtilizadorID_User = Auth::id();
+            $anuncio->CategoriaID_Categoria = $request->categoria;
+            $anuncio->Tipo_ItemID_Tipo = $request->tipo;
+            $anuncio->Status_AnuncioID_Status_Anuncio = 2; // Status Pendente
+            $anuncio->save();
 
             // Processar imagens
             if ($request->hasFile('imagens')) {
@@ -114,25 +124,34 @@ class AnuncioController extends Controller
                     // Salvar imagem no disco
                     $path = $imagem->store('produtos', 'public');
                     
-                    // Inserir registro da imagem
-                    $imagemId = DB::table('imagem')->insertGetId([
-                        'Caminho' => $path
-                    ]);
+                    // Criar registro da imagem
+                    $novaImagem = new Imagem();
+                    $novaImagem->Caminho = $path;
+                    $novaImagem->save();
 
                     // Relacionar imagem com anúncio
                     DB::table('item_imagem')->insert([
-                        'ItemID_Item' => $anuncioId,
-                        'ImagemID_Imagem' => $imagemId
+                        'ItemID_Item' => $anuncio->ID_Anuncio,
+                        'ImagemID_Imagem' => $novaImagem->ID_Imagem
                     ]);
                 }
             }
 
             DB::commit();
-            return response()->json(['message' => 'Anúncio criado com sucesso', 'id' => $anuncioId]);
+
+            // Retornar anúncio criado com suas relações
+            $anuncio->load(['vendedor', 'categoria', 'imagens']);
+            return response()->json([
+                'message' => 'Anúncio criado com sucesso',
+                'anuncio' => $anuncio
+            ], 201);
 
         } catch (\Exception $e) {
             DB::rollback();
-            return response()->json(['message' => 'Erro ao criar anúncio', 'error' => $e->getMessage()], 500);
+            return response()->json([
+                'message' => 'Erro ao criar anúncio',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -152,27 +171,16 @@ class AnuncioController extends Controller
         // Atualizar usando SQL puro
         DB::update('
             UPDATE anuncio 
-            SET titulo = ?, 
-                descricao = ?, 
-                preco = ?
+            SET Titulo = ?, 
+                Descricao = ?, 
+                Preco = ?
             WHERE ID_Anuncio = ?
         ', [$request->titulo, $request->descricao, $request->preco, $id]);
 
         return response()->json(['message' => 'Anúncio atualizado com sucesso']);
     }
 
-    // Deletar anúncio
-    public function destroy($id)
-    {
-        // Soft delete - apenas muda o status para "Eliminado"
-        DB::update('
-            UPDATE anuncio 
-            SET Status_AnuncioID_Status_Anuncio = 3 
-            WHERE ID_Anuncio = ? AND UtilizadorID_User = ?
-        ', [$id, Auth::id()]);
-
-        return response()->json(['message' => 'Anúncio eliminado com sucesso']);
-    }
+    // Método removido para evitar duplicação
 
     // Buscar anúncios por categoria
     public function porCategoria($categoriaId)
@@ -227,5 +235,21 @@ class AnuncioController extends Controller
         ', [$vendedorId]);
 
         return response()->json($anuncios);
+    }
+    
+    // Listar anúncios do usuário autenticado
+    public function meusAnuncios()
+    {
+        $userId = Auth::id();
+        
+        $anuncios = Anuncio::with(['categoria', 'imagens'])
+            ->where('UtilizadorID_User', $userId)
+            ->orderBy('ID_Anuncio', 'desc')
+            ->get();
+            
+        return response()->json([
+            'anuncios' => $anuncios,
+            'total' => count($anuncios)
+        ]);
     }
 }

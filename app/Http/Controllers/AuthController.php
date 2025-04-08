@@ -5,21 +5,27 @@ namespace App\Http\Controllers;
 use App\Models\Utilizador;
 use App\Models\Morada;
 use App\Models\Imagem;
+use App\Models\Aprovacao;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
+    /**
+     * Login do utilizador
+     */
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'Email' => 'required|email',
-            'Password' => 'required'
+            'email' => 'required|email',
+            'password' => 'required'
         ]);
 
-        if (Auth::attempt(['Email' => $credentials['Email'], 'Password' => $credentials['Password']])) {
+        if (Auth::attempt(['Email' => $credentials['email'], 'Password' => $credentials['password']])) {
             $user = Auth::user();
             $token = $user->createToken('auth-token')->plainTextToken;
 
@@ -35,115 +41,195 @@ class AuthController extends Controller
         ], 401);
     }
 
+    /**
+     * Registo de novo utilizador
+     */
     public function register(Request $request)
     {
         $request->validate([
-            'user_name' => 'required|string|max:255|unique:utilizador,User_Name',
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:utilizador,Email',
-            'password' => 'required|string|min:8|confirmed',
-            'cc' => 'required|integer|unique:utilizador,CC',
-            'data_nascimento' => 'required|date',
-            'rua' => 'required|string',
-            'foto_perfil' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+            'User_Name' => 'required|string|max:255|unique:utilizador,User_Name',
+            'Name' => 'required|string|max:255',
+            'Email' => 'required|string|email|max:255|unique:utilizador,Email',
+            'Password' => 'required|string|min:8',
+            'Password_confirmation' => 'required|same:Password',
+            'Data_Nascimento' => 'required|date',
+            'MoradaID_Morada' => 'required|integer|exists:morada,ID_Morada',
+            'comprovativo_morada' => 'required|file|mimes:jpeg,png,jpg,pdf|max:2048'
         ]);
 
         DB::beginTransaction();
+        
         try {
-            // 1.1 Criar morada
-            $morada = Morada::create([
-                'Rua' => $request->rua
-            $path = $file->storeAs('public/comprovativos', $filename);
-
-            // Criar registro na tabela imagem
-            $imagem = new Imagem([
-                'Nome' => $filename,
-                'Path' => $path
+            // Usar a morada selecionada pelo utilizador
+            $moradaId = $request->MoradaID_Morada;
+            
+            // Verificar se a morada existe
+            $morada = Morada::find($moradaId);
+            if (!$morada) {
+                return response()->json([
+                    'message' => 'Morada não encontrada'
+                ], 400);
+            }
+            
+            // Processar comprovativo de morada
+            $imagemId = null;
+            if ($request->hasFile('comprovativo_morada')) {
+                $file = $request->file('comprovativo_morada');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('public/perfil', $filename);
+                
+                $imagem = new Imagem([
+                    'Caminho' => $path
+                ]);
+                $imagem->save();
+                $imagemId = $imagem->ID_Imagem;
+            }
+            
+            // Verificar se temos uma imagem de perfil padrão para usar caso não tenha sido fornecida
+            if (!$imagemId) {
+                // Buscar a imagem padrão existente ou criar uma nova
+                $imagem = Imagem::where('Caminho', 'public/perfil/default.png')->first();
+                
+                if (!$imagem) {
+                    // Criar uma imagem padrão
+                    $imagem = new Imagem([
+                        'Caminho' => 'public/perfil/default.png' // Caminho para imagem padrão
+                    ]);
+                    $imagem->save();
+                }
+                
+                $imagemId = $imagem->ID_Imagem;
+            }
+            
+            // Criar utilizador sem aprovação (simplificado)
+            $user = new Utilizador([
+                'Name' => $request->Name,
+                'User_Name' => $request->User_Name,
+                'Email' => $request->Email,
+                'Password' => Hash::make($request->Password),
+                'Data_Nascimento' => $request->Data_Nascimento,
+                'CC' => '000000000', // Valor padrão temporário
+                'MoradaID_Morada' => $moradaId,
+                'ImagemID_Imagem' => $imagemId,
+                'AprovacaoID_aprovacao' => null, // Sem aprovação inicial
+                'Status_UtilizadorID_status_utilizador' => 1, // Status pendente
+                'TipoUserID_TipoUser' => 2 // Tipo utilizador normal (ID 2)
             ]);
-            $imagem->save();
-
-            // Criar registro na tabela morada
-            $morada = new Morada([
-                'ImagemID_Imagem' => $imagem->ID_Imagem
-            ]);
-            $morada->save();
+            
+            $user->save();
+            
+            DB::commit();
+            
+            $token = $user->createToken('auth-token')->plainTextToken;
+            
+            return response()->json([
+                'user' => $user,
+                'token' => $token,
+                'message' => 'Registo realizado com sucesso'
+            ], 201);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Erro ao registar utilizador: ' . $e->getMessage()
+            ], 500);
         }
-
-        $user = new Utilizador([
-            'Name' => $request->Name,
-            'User_Name' => $request->User_Name,
-            'Email' => $request->Email,
-            'Password' => Hash::make($request->Password),
-            'Data_Nascimento' => $request->Data_Nascimento,
-            'CC' => $request->CC,
-            'MoradaID_Morada' => $morada->ID_Morada,
-            'ImagemID_Imagem' => $imagem->ID_Imagem,
-            'Status_UtilizadorID_status_utilizador' => 1, // Status pendente
-            'TipoUserID_TipoUser' => 1 // Tipo usuário normal
-        ]);
-
-        $user->save();
-
-        $token = $user->createToken('auth-token')->plainTextToken;
-
-        return response()->json([
-            'user' => $user,
-            'token' => $token,
-            'message' => 'Registro realizado com sucesso'
-        ], 201);
     }
 
+    /**
+     * Logout do utilizador
+     */
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
-        
-        return response()->json([
-            'message' => 'Logout realizado com sucesso'
-        ]);
+        return response()->json(['message' => 'Logout realizado com sucesso.']);
+    }
+    
+    /**
+     * Retorna todas as moradas disponíveis para registo
+     */
+    public function getMoradas()
+    {
+        $moradas = Morada::all(['ID_Morada', 'Rua']);
+        return response()->json($moradas);
     }
 
+    /**
+     * Obter dados do utilizador autenticado
+     */
     public function me()
     {
         return response()->json(Auth::user());
     }
-
-    public function verifyEmail($token)
-    {
-        $user = Utilizador::where('verification_token', $token)->first();
-
-        if (!$user) {
-            return response()->json(['message' => 'Token de verificação inválido'], 400);
-        }
-
-        if ($user->email_verified_at) {
-            return response()->json(['message' => 'Email já verificado'], 400);
-        }
-
-        $user->email_verified_at = now();
-        $user->verification_token = null;
-        $user->save();
-
-        return response()->json(['message' => 'Email verificado com sucesso']);
-    }
-
-    public function resendVerification(Request $request)
+    
+    // Método movido para o PerfilController
+    
+    /**
+     * Alterar senha do utilizador
+     */
+    public function changePassword(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|exists:utilizador,Email'
+            'current_password' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
         ]);
-
-        $user = Utilizador::where('Email', $request->email)->first();
-
-        if ($user->email_verified_at) {
-            return response()->json(['message' => 'Email já verificado'], 400);
+        
+        $user = Auth::user();
+        
+        // Verificar senha atual
+        if (!Hash::check($request->current_password, $user->Password)) {
+            return response()->json([
+                'message' => 'A senha atual está incorreta'
+            ], 400);
         }
-
-        $verificationToken = Str::random(64);
-        $user->verification_token = $verificationToken;
+        
+        // Atualizar senha
+        $user->Password = Hash::make($request->password);
         $user->save();
-
-        Mail::to($user->Email)->send(new VerifyEmail($user, $verificationToken));
-
-        return response()->json(['message' => 'Email de verificação reenviado']);
+        
+        return response()->json([
+            'message' => 'Senha alterada com sucesso'
+        ]);
+    }
+    
+    /**
+     * Excluir conta do utilizador
+     */
+    public function deleteAccount(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|string',
+        ]);
+        
+        $user = Auth::user();
+        
+        // Verificar senha
+        if (!Hash::check($request->password, $user->Password)) {
+            return response()->json([
+                'message' => 'A senha está incorreta'
+            ], 400);
+        }
+        
+        DB::beginTransaction();
+        
+        try {
+            // Remover tokens
+            $user->tokens()->delete();
+            
+            // Remover utilizador
+            $user->delete();
+            
+            DB::commit();
+            
+            return response()->json([
+                'message' => 'Conta excluída com sucesso'
+            ]);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Erro ao excluir conta: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
