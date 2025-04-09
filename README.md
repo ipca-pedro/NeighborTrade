@@ -2,24 +2,150 @@
 
 Plataforma para compra, venda e troca de produtos/serviços com sistema de aprovação entre vizinhos.
 
-## Testando a API
+## Guia de Instalação e Configuração
 
 ### Pré-requisitos
-- PHP >= 8.0
-- Composer
-- MySQL
-- Node.js e npm (para o frontend)
-- Postman (ou similar para testar APIs)
 
-### Configuração do Ambiente
-1. Clone o repositório
-2. Execute `composer install` na pasta raiz
-3. Configure o arquivo `.env` com suas credenciais do banco de dados
-4. Execute as migrations: `php artisan migrate`
-5. Inicie o servidor backend: `php artisan serve`
-6. Para o frontend, navegue até a pasta `frontend` e execute:
-   - `npm install`
-   - `npm start`
+- **PHP**: Versão 8.2 ou superior
+- **Composer**: Última versão
+- **MySQL**: Versão 5.7 ou superior
+- **Node.js**: Versão 16.x ou superior
+- **npm**: Versão 8.x ou superior
+- **XAMPP**: Para ambiente de desenvolvimento local (opcional, mas recomendado)
+- **Git**: Para clonar o repositório
+
+### Instalação do Projeto
+
+#### 1. Clonar o Repositório
+
+```bash
+git clone [URL_DO_REPOSITORIO]
+cd NT
+```
+
+#### 2. Configurar o Backend (Laravel)
+
+1. **Instalar Dependências PHP**:
+   ```bash
+   composer install
+   ```
+
+2. **Configurar Variáveis de Ambiente**:
+   - Copie o arquivo `.env.example` para `.env`:
+     ```bash
+     cp .env.example .env
+     ```
+   - Abra o arquivo `.env` e configure as seguintes variáveis:
+     ```
+     DB_CONNECTION=mysql
+     DB_HOST=127.0.0.1
+     DB_PORT=3306
+     DB_DATABASE=neighbortrade
+     DB_USERNAME=seu_usuario
+     DB_PASSWORD=sua_senha
+     ```
+
+3. **Gerar Chave da Aplicação**:
+   ```bash
+   php artisan key:generate
+   ```
+
+4. **Criar o Banco de Dados**:
+   - Crie um banco de dados MySQL chamado `neighbortrade`
+   - Ou importe o arquivo `ER.sql` que contém a estrutura completa do banco de dados
+
+5. **Executar Migrations** (se não importou o ER.sql):
+   ```bash
+   php artisan migrate
+   ```
+
+6. **Criar Link Simbólico para Storage**:
+   ```bash
+   php artisan storage:link
+   ```
+
+#### 3. Configurar o Frontend (React)
+
+1. **Navegar até a pasta do frontend**:
+   ```bash
+   cd frontend
+   ```
+
+2. **Instalar Dependências JavaScript**:
+   ```bash
+   npm install
+   ```
+
+### Executando o Projeto
+
+#### 1. Iniciar o Servidor Backend
+
+```bash
+# Na pasta raiz do projeto
+php artisan serve
+```
+O servidor estará disponível em `http://localhost:8000`
+
+#### 2. Iniciar o Frontend
+
+```bash
+# Na pasta frontend
+npm start
+```
+O frontend estará disponível em `http://localhost:3000`
+
+### Configurações Adicionais
+
+#### CORS (Cross-Origin Resource Sharing)
+
+O projeto já possui um arquivo de configuração CORS em `config/cors.php`. Se estiver enfrentando problemas de CORS, verifique se este arquivo está configurado corretamente:
+
+```php
+return [
+    'paths' => ['api/*'],
+    'allowed_methods' => ['*'],
+    'allowed_origins' => ['*'],  // Em produção, especifique os domínios permitidos
+    'allowed_origins_patterns' => [],
+    'allowed_headers' => ['*'],
+    'exposed_headers' => [],
+    'max_age' => 0,
+    'supports_credentials' => true,
+];
+```
+
+#### Armazenamento de Imagens
+
+O projeto utiliza o sistema de armazenamento do Laravel para salvar imagens de perfil e produtos:
+
+1. Certifique-se de que as pastas `storage/app/public/perfil` e `storage/app/public/produtos` existam e tenham permissões de escrita
+2. Se estiver usando Windows/XAMPP, verifique se o usuário do servidor web tem permissões de escrita nessas pastas
+
+#### Banco de Dados
+
+O arquivo `ER.sql` na raiz do projeto contém toda a estrutura do banco de dados, incluindo tabelas para:
+- Utilizadores
+- Moradas
+- Anúncios
+- Notificações
+- Imagens
+- Tokens de autenticação
+
+### Solução de Problemas Comuns
+
+1. **Erro de conexão com o banco de dados**:
+   - Verifique se o serviço MySQL está em execução
+   - Confirme as credenciais no arquivo `.env`
+   - Certifique-se de que o banco de dados `neighbortrade` existe
+
+2. **Erro ao carregar moradas no frontend**:
+   - Verifique se o servidor backend está em execução
+   - Confirme se a configuração CORS está correta
+   - Verifique se existem moradas cadastradas no banco de dados
+
+3. **Erro ao fazer upload de imagens**:
+   - Verifique as permissões das pastas de armazenamento
+   - Confirme se o link simbólico foi criado corretamente
+   - Verifique os limites de tamanho de upload no PHP (`php.ini`)
 
 ### Estrutura do Projeto
 - **Backend**: Laravel (PHP)

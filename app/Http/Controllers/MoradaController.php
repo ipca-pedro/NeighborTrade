@@ -13,10 +13,7 @@ class MoradaController extends Controller
      */
     public function test()
     {
-        return response()->json(['message' => 'API funcionando corretamente'])
-            ->header('Access-Control-Allow-Origin', '*')
-            ->header('Access-Control-Allow-Methods', 'GET')
-            ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        return response()->json(['message' => 'API funcionando corretamente']);
     }
     /**
      * Retorna todas as moradas disponíveis
@@ -26,26 +23,17 @@ class MoradaController extends Controller
         try {
             // Verificar se a tabela existe
             if (!Schema::hasTable('morada')) {
-                return response()->json(['error' => 'Tabela morada não encontrada'], 500)
-                    ->header('Access-Control-Allow-Origin', '*')
-                    ->header('Access-Control-Allow-Methods', 'GET')
-                    ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+                return response()->json(['error' => 'Tabela morada não encontrada'], 500);
             }
             
             // Obter todas as moradas
             $moradas = Morada::all(['ID_Morada', 'Rua']);
             
             // Retornar as moradas
-            return response()->json($moradas)
-                ->header('Access-Control-Allow-Origin', '*')
-                ->header('Access-Control-Allow-Methods', 'GET')
-                ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+            return response()->json($moradas);
         } catch (\Exception $e) {
             // Retornar erro
-            return response()->json(['error' => $e->getMessage()], 500)
-                ->header('Access-Control-Allow-Origin', '*')
-                ->header('Access-Control-Allow-Methods', 'GET')
-                ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
@@ -63,15 +51,9 @@ class MoradaController extends Controller
             $morada->Rua = $request->Rua;
             $morada->save();
 
-            return response()->json($morada, 201)
-                ->header('Access-Control-Allow-Origin', '*')
-                ->header('Access-Control-Allow-Methods', 'POST')
-                ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+            return response()->json($morada, 201);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500)
-                ->header('Access-Control-Allow-Origin', '*')
-                ->header('Access-Control-Allow-Methods', 'POST')
-                ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 }
