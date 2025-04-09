@@ -16,12 +16,43 @@ Plataforma para compra, venda e troca de produtos/serviços com sistema de aprov
 
 ### Instalação do Projeto
 
-#### 1. Clonar o Repositório
+#### 1. Clonar o Repositório Principal
 
 ```bash
-git clone [URL_DO_REPOSITORIO]
-cd NT
+git clone https://github.com/ipca-pedro/NeighborTrade.git
+cd NeighborTrade
 ```
+
+#### 2. Lidar com o Frontend
+
+O diretório `frontend` contém um repositório Git separado. Existem duas abordagens para lidar com ele:
+
+**Opção A: Usar o frontend existente**
+
+O diretório frontend já está incluído no repositório principal, então você pode usá-lo diretamente:
+
+```bash
+cd frontend
+npm install
+```
+
+**Opção B: Clonar o frontend separadamente (recomendado para desenvolvimento)**
+
+Se você precisar fazer alterações no frontend e enviar para o repositório remoto do frontend:
+
+```bash
+# Remova o diretório frontend existente
+rm -rf frontend
+
+# Clone o repositório do frontend (substitua [URL_DO_REPOSITORIO_FRONTEND] pela URL correta)
+git clone [URL_DO_REPOSITORIO_FRONTEND] frontend
+
+# Entre no diretório e instale as dependências
+cd frontend
+npm install
+```
+
+> **Nota**: Consulte o administrador do projeto para obter a URL correta do repositório frontend.
 
 #### 2. Configurar o Backend (Laravel)
 
@@ -146,6 +177,10 @@ O arquivo `ER.sql` na raiz do projeto contém toda a estrutura do banco de dados
    - Verifique as permissões das pastas de armazenamento
    - Confirme se o link simbólico foi criado corretamente
    - Verifique os limites de tamanho de upload no PHP (`php.ini`)
+
+4. **Problemas com o diretório frontend**:
+   - Se o frontend aparecer como um submódulo Git (com uma seta ao lado no Git), mas você não conseguir atualizá-lo, siga as instruções na seção "Lidar com o Frontend"
+   - Se você fizer alterações no frontend, certifique-se de fazer commit e push separadamente dentro do diretório frontend
 
 ### Estrutura do Projeto
 - **Backend**: Laravel (PHP)
