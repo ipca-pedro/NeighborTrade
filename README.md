@@ -1,13 +1,16 @@
 # NeighborTrade - Sistema de Negócios e Trocas
 
-Plataforma comunitária para compra, venda e troca de produtos e serviços entre vizinhos, com um sistema de aprovação para garantir a segurança e confiança na comunidade.
+Plataforma comunitária para compra, venda e troca de produtos e serviços entre vizinhos, com um sistema de aprovação.
+
+**⚠️ AVISO IMPORTANTE ⚠️**
+Este repositório inclui o ficheiro `.env` diretamente no controlo de versão para simplificar a configuração inicial *neste contexto específico*. **Esta NÃO é uma prática de segurança recomendada** e não deve ser replicada em projetos reais ou públicos, pois expõe informações sensíveis como senhas e chaves de API.
 
 ## Índice
 
 -   [Funcionalidades Principais](#funcionalidades-principais)
 -   [Stack Tecnológica](#stack-tecnológica)
 -   [Pré-requisitos Essenciais](#pré-requisitos-essenciais)
--   [Guia Rápido de Instalação (Após Clonar)](#guia-rápido-de-instalação-após-clonar)
+-   [Guia Rápido de Instalação (Após Clonar - Usando .env do Repositório)](#guia-rápido-de-instalação-após-clonar---usando-env-do-repositório)
 -   [Executando o Projeto](#executando-o-projeto)
 -   [Estrutura do Projeto](#estrutura-do-projeto)
 -   [Banco de Dados](#banco-de-dados)
@@ -46,16 +49,17 @@ Antes de começar, garanta que tem instalado:
 
 -   **PHP**: Versão 8.2+
 -   **Composer**: Última versão
--   **MySQL**: Versão 5.7+ (ou MariaDB compatível)
+-   **MySQL**: Versão 5.7+ (ou MariaDB compatível) - **Importante:** O seu servidor MySQL local *deve* estar configurado para aceitar as credenciais (utilizador/senha) que estão definidas no ficheiro `.env` do repositório.
 -   **Node.js**: Versão 16+
 -   **npm**: Versão 8+ (vem com o Node.js)
 -   **Git**
+-   **Ferramenta de Gestão de BD:** Acesso ao [phpMyAdmin](https://www.phpmyadmin.net/) (comum com XAMPP) ou outra ferramenta como MySQL Workbench.
 
 *(Opcional, mas recomendado para ambiente local: [XAMPP](https://www.apachefriends.org/download.html) ou [Laragon](https://laragon.org/download/))*
 
-## Guia Rápido de Instalação (Após Clonar)
+## Guia Rápido de Instalação (Após Clonar - Usando .env do Repositório)
 
-Este guia assume que acabou de clonar o repositório e que o ficheiro `.env` já está presente e configurado na raiz do projeto.
+Este guia assume que acabou de clonar o repositório e que o ficheiro `.env` **já está presente e configurado na raiz do projeto** (incluído no Git).
 
 1.  **Clonar o Repositório (se ainda não o fez):**
     ```bash
@@ -69,20 +73,13 @@ Este guia assume que acabou de clonar o repositório e que o ficheiro `.env` já
         ```bash
         composer install
         ```
-    *   **Configurar Banco de Dados:**
-        *   Abra o ficheiro `.env` existente.
-        *   **Verifique** as configurações de `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`.
-        *   **Crie** um banco de dados MySQL **vazio** com o nome exato definido em `DB_DATABASE` (ex: `neighbortrade`). Use codificação `utf8mb4_unicode_ci`.
-        *(Pode usar phpMyAdmin, MySQL Workbench, etc.)*
-    *   **Executar Migrations (Criar Tabelas):**
-        ```bash
-        php artisan migrate
-        ```
-    *   **Criar Link Simbólico para Storage:**
-        ```bash
-        php artisan storage:link
-        ```
-        *(No Windows, pode precisar executar o terminal como Administrador)*
+        *(Não precisa copiar `.env.example` nem gerar chave, pois o `.env` já existe no repositório com a chave definida).*
+    *   **Configurar Banco de Dados (Manualmente):**
+        *   **Verifique** o ficheiro `.env` incluído no projeto para saber o nome da base de dados (`DB_DATABASE`) e as credenciais (`DB_USERNAME`, `DB_PASSWORD`).
+        *   **Garanta que o seu servidor MySQL local está configurado** para aceitar conexões com o utilizador e senha definidos no ficheiro `.env`. (Ex: Se o `.env` diz `DB_USERNAME=root` e `DB_PASSWORD=`, o seu MySQL local deve ter um utilizador `root` sem senha).
+        *   Aceda à sua ferramenta de gestão de MySQL (ex: phpMyAdmin).
+        *   **Crie** uma nova base de dados com o nome exato que está no `.env` (ex: `neighbortrade`). Use codificação `utf8mb4_unicode_ci`.
+        *   **Importe** o script SQL fornecido (`ER.sql` na raiz do projeto) para dentro da base de dados que acabou de criar.
 
 3.  **Configurar o Frontend (React):**
     *   Navegue até a pasta do frontend:
@@ -120,7 +117,6 @@ Abra **dois terminais** na pasta raiz do projeto (`NeighborTrade`).
 A aplicação deve abrir automaticamente no seu navegador em `http://localhost:3000`.
 
 ## Estrutura do Projeto
-
 NeighborTrade/
 ├── app/ # Lógica principal do Laravel (Controllers, Models, etc.)
 │ ├── Http/
