@@ -118,6 +118,8 @@ A aplicação deve abrir automaticamente no seu navegador em `http://localhost:3
 
 ## Estrutura do Projeto
 
+
+```markdown
 NeighborTrade/
 ├── app/ # Lógica principal do Laravel (Controllers, Models, etc.)
 │ ├── Http/
@@ -158,6 +160,8 @@ NeighborTrade/
 ├── artisan # CLI do Laravel
 ├── ER.sql # Script SQL para criar a estrutura da BD manualmente
 └── README.md # Este ficheiro
+```
+
 
 ## Banco de Dados
 
