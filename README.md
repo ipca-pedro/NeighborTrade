@@ -117,6 +117,7 @@ Abra **dois terminais** na pasta raiz do projeto (`NeighborTrade`).
 A aplicação deve abrir automaticamente no seu navegador em `http://localhost:3000`.
 
 ## Estrutura do Projeto
+
 NeighborTrade/
 ├── app/ # Lógica principal do Laravel (Controllers, Models, etc.)
 │ ├── Http/
@@ -126,7 +127,7 @@ NeighborTrade/
 │ └── Providers/ # Service Providers
 ├── bootstrap/ # Ficheiros de inicialização do Laravel
 ├── config/ # Ficheiros de configuração (database, cors, app)
-├── database/ # Migrations e Seeders
+├── database/ # Migrations e Seeders (Migrations NÃO são usadas para setup inicial)
 │ ├── migrations/
 │ └── seeders/
 ├── public/ # Pasta pública web (index.php)
@@ -155,9 +156,8 @@ NeighborTrade/
 ├── .env.example # Exemplo de ficheiro .env
 ├── composer.json # Dependências do PHP (Backend)
 ├── artisan # CLI do Laravel
-├── ER.sql # (Opcional) Dump da estrutura do banco de dados
+├── ER.sql # Script SQL para criar a estrutura da BD manualmente
 └── README.md # Este ficheiro
-
 
 ## Banco de Dados
 
