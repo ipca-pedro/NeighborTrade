@@ -1,800 +1,342 @@
 # NeighborTrade - Sistema de Negócios e Trocas
 
-Plataforma para compra, venda e troca de produtos/serviços com sistema de aprovação entre vizinhos.
-
-## Guia de Instalação e Configuração
-
-### Pré-requisitos
-
-- **PHP**: Versão 8.2 ou superior
-- **Composer**: Última versão
-- **MySQL**: Versão 5.7 ou superior
-- **Node.js**: Versão 16.x ou superior
-- **npm**: Versão 8.x ou superior
-- **XAMPP**: Para ambiente de desenvolvimento local (opcional, mas recomendado)
-- **Git**: Para clonar o repositório
-
-### Instalação do Projeto
-
-#### 1. Clonar o Repositório Principal
-
-```bash
-git clone https://github.com/ipca-pedro/NeighborTrade.git
-cd NeighborTrade
-```
-
-#### 2. Lidar com o Frontend
-
-O diretório `frontend` contém um repositório Git separado. Existem duas abordagens para lidar com ele:
-
-**Opção A: Usar o frontend existente**
-
-O diretório frontend já está incluído no repositório principal, então você pode usá-lo diretamente:
-
-```bash
-cd frontend
-npm install
-```
-
-**Opção B: Clonar o frontend separadamente (recomendado para desenvolvimento)**
-
-Se você precisar fazer alterações no frontend e enviar para o repositório remoto do frontend:
-
-```bash
-# Remova o diretório frontend existente
-rm -rf frontend
-
-# Clone o repositório do frontend (substitua [URL_DO_REPOSITORIO_FRONTEND] pela URL correta)
-git clone [URL_DO_REPOSITORIO_FRONTEND] frontend
-
-# Entre no diretório e instale as dependências
-cd frontend
-npm install
-```
-
-> **Nota**: Consulte o administrador do projeto para obter a URL correta do repositório frontend.
-
-#### 2. Configurar o Backend (Laravel)
-
-1. **Instalar Dependências PHP**:
-   ```bash
-   composer install
-   ```
-
-2. **Configurar Variáveis de Ambiente**:
-   - Copie o arquivo `.env.example` para `.env`:
-     ```bash
-     cp .env.example .env
-     ```
-   - Abra o arquivo `.env` e configure as seguintes variáveis:
-     ```
-     DB_CONNECTION=mysql
-     DB_HOST=127.0.0.1
-     DB_PORT=3306
-     DB_DATABASE=neighbortrade
-     DB_USERNAME=seu_usuario
-     DB_PASSWORD=sua_senha
-     ```
-
-3. **Gerar Chave da Aplicação**:
-   ```bash
-   php artisan key:generate
-   ```
-
-4. **Criar o Banco de Dados**:
-   - Crie um banco de dados MySQL chamado `neighbortrade`
-   - Ou importe o arquivo `ER.sql` que contém a estrutura completa do banco de dados
-
-5. **Executar Migrations** (se não importou o ER.sql):
-   ```bash
-   php artisan migrate
-   ```
-
-6. **Criar Link Simbólico para Storage**:
-   ```bash
-   php artisan storage:link
-   ```
-
-#### 3. Configurar o Frontend (React)
-
-1. **Navegar até a pasta do frontend**:
-   ```bash
-   cd frontend
-   ```
-
-2. **Instalar Dependências JavaScript**:
-   ```bash
-   npm install
-   ```
-
-### Executando o Projeto
-
-#### 1. Iniciar o Servidor Backend
-
-```bash
-# Na pasta raiz do projeto
-php artisan serve
-```
-O servidor estará disponível em `http://localhost:8000`
-
-#### 2. Iniciar o Frontend
-
-```bash
-# Na pasta frontend
-npm start
-```
-O frontend estará disponível em `http://localhost:3000`
-
-### Configurações Adicionais
-
-#### CORS (Cross-Origin Resource Sharing)
-
-O projeto já possui um arquivo de configuração CORS em `config/cors.php`. Se estiver enfrentando problemas de CORS, verifique se este arquivo está configurado corretamente:
-
-```php
-return [
-    'paths' => ['api/*'],
-    'allowed_methods' => ['*'],
-    'allowed_origins' => ['*'],  // Em produção, especifique os domínios permitidos
-    'allowed_origins_patterns' => [],
-    'allowed_headers' => ['*'],
-    'exposed_headers' => [],
-    'max_age' => 0,
-    'supports_credentials' => true,
-];
-```
-
-#### Armazenamento de Imagens
-
-O projeto utiliza o sistema de armazenamento do Laravel para salvar imagens de perfil e produtos:
-
-1. Certifique-se de que as pastas `storage/app/public/perfil` e `storage/app/public/produtos` existam e tenham permissões de escrita
-2. Se estiver usando Windows/XAMPP, verifique se o usuário do servidor web tem permissões de escrita nessas pastas
-
-#### Banco de Dados
-
-O arquivo `ER.sql` na raiz do projeto contém toda a estrutura do banco de dados, incluindo tabelas para:
-- Utilizadores
-- Moradas
-- Anúncios
-- Notificações
-- Imagens
-- Tokens de autenticação
-
-### Solução de Problemas Comuns
-
-1. **Erro de conexão com o banco de dados**:
-   - Verifique se o serviço MySQL está em execução
-   - Confirme as credenciais no arquivo `.env`
-   - Certifique-se de que o banco de dados `neighbortrade` existe
-
-2. **Erro ao carregar moradas no frontend**:
-   - Verifique se o servidor backend está em execução
-   - Confirme se a configuração CORS está correta
-   - Verifique se existem moradas cadastradas no banco de dados
-
-3. **Erro ao fazer upload de imagens**:
-   - Verifique as permissões das pastas de armazenamento
-   - Confirme se o link simbólico foi criado corretamente
-   - Verifique os limites de tamanho de upload no PHP (`php.ini`)
-
-4. **Problemas com o diretório frontend**:
-   - Se o frontend aparecer como um submódulo Git (com uma seta ao lado no Git), mas você não conseguir atualizá-lo, siga as instruções na seção "Lidar com o Frontend"
-   - Se você fizer alterações no frontend, certifique-se de fazer commit e push separadamente dentro do diretório frontend
-
-### Estrutura do Projeto
-- **Backend**: Laravel (PHP)
-- **Frontend**: React.js
-- **Banco de Dados**: MySQL
-
-### Endpoints Disponíveis
-
-#### Autenticação
-1. **Registo de Utilizador**
-   - Método: POST
-   - URL: `/api/auth/register`
-   - Descrição: Regista um novo utilizador no sistema
-
-2. **Login**
-   - Método: POST
-   - URL: `/api/auth/login`
-   - Descrição: Autentica um utilizador e retorna um token
-
-3. **Logout**
-   - Método: POST
-   - URL: `/api/auth/logout`
-   - Descrição: Termina a sessão do utilizador
-
-#### Moradas
-1. **Listar Moradas**
-   - Método: GET
-   - URL: `/api/moradas`
-   - Descrição: Retorna todas as moradas disponíveis para registo
-
-2. **Criar Morada**
-   - Método: POST
-   - URL: `/api/moradas`
-   - Descrição: Adiciona uma nova morada ao sistema
-
-#### Anúncios
-1. **Listar Anúncios**
-   - Método: GET
-   - URL: `/api/anuncios`
-   - Descrição: Retorna lista de anúncios em destaque
-
-2. **Procurar Anúncios**
-   - Método: GET
-   - URL: `/api/anuncios/procurar?termo=termo`
-   - Descrição: Busca anúncios por título ou descrição
-
-3. **Anúncios por Tipo**
-   - Método: GET
-   - URL: `/api/anuncios/tipo/{tipoId}`
-   - Descrição: Lista anúncios por tipo (1: Produto, 2: Serviço)
-
-4. **Anúncios por Categoria**
-   - Método: GET
-   - URL: `/api/anuncios/categoria/{categoriaId}`
-   - Descrição: Lista anúncios de uma categoria específica
-
-5. **Detalhes do Anúncio**
-   - Método: GET
-   - URL: `/api/anuncios/{id}`
-   - Descrição: Retorna detalhes de um anúncio específico
-
-### Como Testar
-
-1. **Usando o Arquivo de Testes JSON**
-   - Um arquivo `testes_api.json` foi criado na raiz do projeto com exemplos de requisições para todos os endpoints
-   - Importe este arquivo no Postman para testar rapidamente a API
-   - Crie uma nova requisição
-   - Selecione o método (GET, POST, etc)
-   - Digite a URL (ex: `http://localhost:8000/api/anuncios`)
-   - Clique em Send
-
-2. **Usando cURL**
-   ```bash
-   # Listar anúncios
-   curl http://localhost:8000/api/anuncios
-
-   # Buscar anúncios
-   curl http://localhost:8000/api/anuncios/buscar?q=computador
-
-   # Anúncios por tipo
-   curl http://localhost:8000/api/anuncios/tipo/1
-   ```
-
-3. **Usando o Navegador**
-   - Para endpoints GET, você pode simplesmente acessar a URL no navegador
-   - Ex: `http://localhost:8000/api/anuncios`
-
-### Respostas da API
-
-- **Sucesso**: Status 200 com JSON dos dados
-- **Erro de Validação**: Status 400 com mensagem de erro
-- **Não Encontrado**: Status 404 com mensagem
-- **Erro do Servidor**: Status 500 com mensagem
-
-### Exemplos de Resposta
-
-```json
-// GET /api/anuncios
-{
-    "data": [
-        {
-            "ID_Item": 1,
-            "Titulo": "Notebook Dell",
-            "Descricao": "Notebook em ótimo estado",
-            "Preco": 2500.00,
-            "vendedor": {
-                "Name": "João Silva"
-            },
-            "imagens": [
-                {
-                    "Caminho": "produtos/notebook.jpg"
-                }
-            ]
-        }
-    ]
-}
-
-// GET /api/anuncios/buscar?q=notebook
-{
-    "termo": "notebook",
-    "resultados": [...],
-    "total": 5
-}
-```
-
-### Dicas de Teste
-
-1. **Teste diferentes cenários**:
-   - Busca com termo vazio
-   - Busca com termo inválido
-   - Categoria inexistente
-   - ID de anúncio inválido
-
-2. **Verifique os headers**:
-   - Content-Type deve ser application/json
-   - Verifique códigos de status HTTP
-
-3. **Teste paginação e limites**:
-   - Grande volume de resultados
-   - Diferentes ordenações
-
-4. **Teste campos obrigatórios**:
-   - Envio de dados incompletos
-   - Formatos inválidos
-
-## Controllers e Endpoints
-
-### 1. AuthController - Autenticação
-
-#### `POST /auth/register`
-- Registro de usuário com foto de perfil
-- Validações: email único, senha forte, CC único
-- Cria morada e salva foto de perfil
-- Status inicial: Pendente de aprovação
-
-#### `POST /auth/login`
-- Login com email/senha
-- Verifica status do usuário
-- Retorna token JWT e tipo de usuário
-
-#### `GET /auth/profile`
-- Retorna perfil do usuário logado
-- Inclui: morada, imagem, tipo, status
-- Lista anúncios ativos do usuário
-
-### 2. AnuncioController - Anúncios
-
-#### `GET /anuncios`
-- Lista todos anúncios ativos
-- Inclui: vendedor, imagens, categoria
-- Ordenado por mais recentes
-
-#### `GET /anuncios/{id}`
-- Detalhes de um anúncio específico
-- Inclui: vendedor, categoria, todas as imagens
-
-#### `POST /anuncios`
-- Cria novo anúncio com múltiplas imagens
-- Validações: título, descrição, preço
-- Status inicial: Pendente de aprovação
-
-#### `GET /anuncios/categoria/{id}`
-- Lista anúncios por categoria
-- Apenas ativos e aprovados
-- Inclui imagem principal
-
-#### `GET /anuncios/vendedor/{id}`
-- Lista anúncios de um vendedor
-- Apenas ativos e aprovados
-- Inclui imagem principal
-
-#### `DELETE /anuncios/{id}`
-- Soft delete do anúncio
-- Apenas o dono pode deletar
-- Muda status para "Eliminado"
-
-### 3. AdminController - Administração
-
-#### `GET /admin/usuarios/pendentes`
-- Lista usuários aguardando aprovação
-- Inclui: morada, foto, dados pessoais
-
-#### `POST /admin/usuarios/{id}/aprovar`
-- Aprova/rejeita usuário
-- Requer motivo se rejeitado
-- Cria registro de aprovação
-
-#### `GET /admin/anuncios/pendentes`
-- Lista anúncios aguardando aprovação
-- Inclui: vendedor, imagens, categoria
-
-#### `POST /admin/anuncios/{id}/aprovar`
-- Aprova/rejeita anúncio
-- Requer motivo se rejeitado
-- Cria registro de aprovação
-
-#### `GET /admin/dashboard`
-- Estatísticas gerais
-- Total de usuários e anúncios
-- Itens pendentes de aprovação
-
-### 4. PasswordResetController - Reset de Senha
-
-#### `POST /password/forgot`
-- Solicita reset de senha
-- Gera token único
-- Validade: 24 horas
-
-#### `POST /password/reset`
-- Valida token
-- Atualiza senha
-- Remove token usado
-
-## Estrutura do Banco de Dados
-
-### Tabelas Principais
-- `utilizador`: Usuários do sistema
-- `anuncio`: Anúncios de produtos/serviços
-- `imagem`: Fotos de perfil e anúncios
-- `morada`: Endereços dos usuários
-- `aprovacao`: Registros de aprovações
-
-### Tabelas de Suporte
-- `categoria`: Tipos de anúncios
-- `tipo_item`: Classificação dos itens
-- `status_anuncio`: Estados do anúncio
-- `status_utilizador`: Estados do usuário
-
-### Tabelas de Relacionamento
-- `item_imagem`: Relaciona anúncios com imagens
-- `password_resets`: Tokens de reset de senha
-
-## Próximas Funcionalidades
-
-1. **Chat**
-   - Mensagens entre usuários
-   - Notificações em tempo real
-
-2. **Pagamentos**
-   - Integração com gateway
-   - Histórico de transações
-
-3. **Trocas**
-   - Proposta de troca
-   - Negociação
-   - Avaliações
-
-## Como Usar
-
-1. Clone o repositório
-2. Configure o `.env`
-3. Instale dependências:
-   ```bash
-   composer install
-   ```
-4. Inicie o servidor:
-   ```bash
-   php artisan serve
-   ```
-
-## Documentação da API
-
-A documentação completa da API está disponível em `/api/documentation`.
-
-## Extensões VS Code Recomendadas
-
-### PHP
-- `bmewburn.vscode-intelephense-client`: Intelephense - Suporte completo para PHP
-- `xdebug.php-debug`: PHP Debug - Para debugging com Xdebug
-- `MehediDracula.php-namespace-resolver`: PHP Namespace Resolver - Auto-importação de classes
-- `neilbrayfield.php-docblocker`: PHP DocBlocker - Gera documentação PHPDoc
-- `onecentlin.laravel-blade`: Laravel Blade Snippets - Suporte para templates Blade
-
-### JavaScript/React (Frontend)
-- `dbaeumer.vscode-eslint`: ESLint - Linting para JavaScript
-- `esbenp.prettier-vscode`: Prettier - Formatação de código
-- `dsznajder.es7-react-js-snippets`: ES7+ React/Redux/React-Native snippets
-
-### Git
-- `eamodio.gitlens`: GitLens - Histórico e blame do Git
-- `mhutchie.git-graph`: Git Graph - Visualização do histórico Git
-
-### Database
-- `mtxr.sqltools`: SQLTools - Gerenciamento de banco de dados
-- `mtxr.sqltools-driver-mysql`: SQLTools MySQL/MariaDB - Driver para MySQL
-
-### Utilidades
-- `mikestead.dotenv`: DotENV - Suporte para arquivos .env
-- `christian-kohler.path-intellisense`: Path Intellisense - Autocompletar caminhos
-- `formulahendry.auto-rename-tag`: Auto Rename Tag - Renomeia tags HTML/XML
-- `rangav.vscode-thunder-client`: Thunder Client - Cliente REST API
-
-### Temas e Ícones
-- `PKief.material-icon-theme`: Material Icon Theme - Ícones bonitos
-- `zhuangtongfa.material-theme`: One Dark Pro - Tema escuro popular
-
-### Como Instalar
-1. Abra o VS Code
-2. Pressione `Ctrl+P`
-3. Cole: `ext install` seguido do ID da extensão
-4. Ou pesquise pelo nome na aba de extensões (`Ctrl+Shift+X`)
-
-Plataforma comunitária para compra, venda e troca de produtos e serviços.
+Plataforma comunitária para compra, venda e troca de produtos e serviços entre vizinhos, com um sistema de aprovação para garantir a segurança e confiança na comunidade.
+
+## Índice
+
+-   [Funcionalidades Principais](#funcionalidades-principais)
+-   [Stack Tecnológica](#stack-tecnológica)
+-   [Pré-requisitos Essenciais](#pré-requisitos-essenciais)
+-   [Guia Rápido de Instalação (Após Clonar)](#guia-rápido-de-instalação-após-clonar)
+-   [Executando o Projeto](#executando-o-projeto)
+-   [Estrutura do Projeto](#estrutura-do-projeto)
+-   [Banco de Dados](#banco-de-dados)
+-   [Endpoints da API](#endpoints-da-api)
+-   [Testando a API](#testando-a-api)
+-   [Configurações Adicionais](#configurações-adicionais)
+    -   [CORS](#cors-cross-origin-resource-sharing)
+    -   [Armazenamento de Imagens](#armazenamento-de-imagens)
+-   [Solução de Problemas Comuns](#solução-de-problemas-comuns)
+-   [Próximas Funcionalidades](#próximas-funcionalidades)
+-   [Contribuição](#contribuição)
+-   [Extensões VS Code Recomendadas](#extensões-vs-code-recomendadas)
+
+## Funcionalidades Principais
+
+-   **Autenticação Segura:** Registo com validação, upload de comprovativo, login JWT.
+-   **Gestão de Anúncios:** Criação/edição de anúncios de produtos ou serviços com múltiplas imagens.
+-   **Sistema de Aprovação:** Administradores aprovam novos utilizadores e anúncios para manter a qualidade da plataforma.
+-   **Listagem e Pesquisa:** Visualização de anúncios por categorias, tipo, vendedor e pesquisa por termos.
+-   **Perfil de Utilizador:** Gestão de dados pessoais e visualização de anúncios próprios.
+-   **Administração:** Dashboard com estatísticas e painéis para gestão de aprovações pendentes.
+-   **Recuperação de Senha:** Fluxo seguro para redefinição de senha via email.
+
+## Stack Tecnológica
+
+-   **Backend:** PHP 8.2+ / Laravel 10+
+-   **Frontend:** React.js 18+
+-   **Banco de Dados:** MySQL 5.7+
+-   **Servidor Web (Desenvolvimento):** Servidor embutido do PHP (`php artisan serve`), Servidor de desenvolvimento do Node/React (`npm start`)
+-   **Gestor de Pacotes:** Composer (PHP), npm (Node.js)
+-   **Controlo de Versão:** Git
+
+## Pré-requisitos Essenciais
+
+Antes de começar, garanta que tem instalado:
+
+-   **PHP**: Versão 8.2+
+-   **Composer**: Última versão
+-   **MySQL**: Versão 5.7+ (ou MariaDB compatível)
+-   **Node.js**: Versão 16+
+-   **npm**: Versão 8+ (vem com o Node.js)
+-   **Git**
+
+*(Opcional, mas recomendado para ambiente local: [XAMPP](https://www.apachefriends.org/download.html) ou [Laragon](https://laragon.org/download/))*
+
+## Guia Rápido de Instalação (Após Clonar)
+
+Este guia assume que acabou de clonar o repositório e que o ficheiro `.env` já está presente e configurado na raiz do projeto.
+
+1.  **Clonar o Repositório (se ainda não o fez):**
+    ```bash
+    git clone https://github.com/ipca-pedro/NeighborTrade.git
+    cd NeighborTrade
+    ```
+
+2.  **Configurar o Backend (Laravel):**
+    *   Navegue até a pasta raiz do projeto (`NeighborTrade`).
+    *   **Instalar dependências PHP:**
+        ```bash
+        composer install
+        ```
+    *   **Configurar Banco de Dados:**
+        *   Abra o ficheiro `.env` existente.
+        *   **Verifique** as configurações de `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`.
+        *   **Crie** um banco de dados MySQL **vazio** com o nome exato definido em `DB_DATABASE` (ex: `neighbortrade`). Use codificação `utf8mb4_unicode_ci`.
+        *(Pode usar phpMyAdmin, MySQL Workbench, etc.)*
+    *   **Executar Migrations (Criar Tabelas):**
+        ```bash
+        php artisan migrate
+        ```
+    *   **Criar Link Simbólico para Storage:**
+        ```bash
+        php artisan storage:link
+        ```
+        *(No Windows, pode precisar executar o terminal como Administrador)*
+
+3.  **Configurar o Frontend (React):**
+    *   Navegue até a pasta do frontend:
+        ```bash
+        cd frontend
+        ```
+    *   **Instalar dependências JavaScript:**
+        ```bash
+        npm install
+        ```
+    *   Volte para a pasta raiz do projeto para o próximo passo:
+        ```bash
+        cd ..
+        ```
+
+## Executando o Projeto
+
+Abra **dois terminais** na pasta raiz do projeto (`NeighborTrade`).
+
+1.  **Terminal 1 - Iniciar Backend:**
+    ```bash
+    php artisan serve
+    ```
+    *(API disponível em `http://localhost:8000`)*
+
+2.  **Terminal 2 - Iniciar Frontend:**
+    ```bash
+    # Navegue até a pasta frontend
+    cd frontend
+    # Inicie o servidor de desenvolvimento React
+    npm start
+    ```
+    *(Aplicação disponível em `http://localhost:3000`)*
+
+A aplicação deve abrir automaticamente no seu navegador em `http://localhost:3000`.
 
 ## Estrutura do Projeto
 
-### Backend (Laravel)
+NeighborTrade/
+├── app/ # Lógica principal do Laravel (Controllers, Models, etc.)
+│ ├── Http/
+│ │ ├── Controllers/ # Controladores (AuthController, AnuncioController, etc.)
+│ │ └── Middleware/ # Middlewares (Autenticação, CORS)
+│ ├── Models/ # Modelos Eloquent (Utilizador, Anuncio, Morada, etc.)
+│ └── Providers/ # Service Providers
+├── bootstrap/ # Ficheiros de inicialização do Laravel
+├── config/ # Ficheiros de configuração (database, cors, app)
+├── database/ # Migrations e Seeders
+│ ├── migrations/
+│ └── seeders/
+├── public/ # Pasta pública web (index.php)
+│ └── storage/ # Link simbólico para storage/app/public
+├── resources/ # Views (se usar Blade), assets não compilados
+├── routes/ # Definição de rotas (api.php, web.php)
+├── storage/ # Ficheiros gerados (logs, cache, ficheiros carregados)
+│ ├── app/
+│ │ └── public/ # Ficheiros acessíveis publicamente
+│ │ ├── perfil/
+│ │ └── produtos/
+│ └── logs/
+├── tests/ # Testes unitários e de funcionalidade
+├── vendor/ # Dependências do Composer
+├── frontend/ # Aplicação React
+│ ├── public/ # Ficheiros estáticos do React (index.html)
+│ ├── src/ # Código fonte do React
+│ │ ├── components/ # Componentes reutilizáveis (Auth, Layout, Anuncios)
+│ │ ├── pages/ # Componentes de página (HomePage, LoginPage, AnuncioDetailsPage)
+│ │ ├── services/ # Lógica de chamadas à API (axios)
+│ │ ├── App.js # Componente principal e rotas do React
+│ │ └── index.js # Ponto de entrada do React
+│ ├── node_modules/ # Dependências do npm
+│ └── package.json # Configuração e dependências do frontend
+├── .env # Configurações de ambiente (INCLUÍDO NESTE REPO)
+├── .env.example # Exemplo de ficheiro .env
+├── composer.json # Dependências do PHP (Backend)
+├── artisan # CLI do Laravel
+├── ER.sql # (Opcional) Dump da estrutura do banco de dados
+└── README.md # Este ficheiro
 
-#### Controllers
-- `AuthController`: Gerencia autenticação, registro e perfil de usuários
-- `AnuncioController`: CRUD de anúncios e gerenciamento de imagens
-- `AdminController`: Aprovação de usuários e anúncios
 
-#### Models
-Modelos principais:
-- `Utilizador`: Usuários do sistema
-- `Anuncio`: Anúncios de produtos/serviços
-- `Imagem`: Gerenciamento de imagens
-- `Morada`: Endereços
+## Banco de Dados
 
-Modelos de suporte:
-- `Categoria`: Tipos de anúncios (produtos, serviços)
-- `TipoItem`: Classificação do item (físico, digital, serviço)
-- `StatusAnuncio`: Estados do anúncio (ativo, pendente, vendido)
-- `StatusUtilizador`: Estados do usuário (ativo, pendente, bloqueado)
+O banco de dados MySQL é estruturado para suportar todas as funcionalidades da plataforma. As tabelas principais incluem:
 
-### Frontend (React)
+-   `utilizador`: Armazena informações dos usuários (nome, email, senha, CC, status, tipo).
+-   `morada`: Endereços associados aos usuários.
+-   `anuncio`: Detalhes dos anúncios (título, descrição, preço, tipo, categoria, status).
+-   `imagem`: Caminhos das imagens associadas aos anúncios e perfis.
+-   `categoria`: Categorias de anúncios (ex: Eletrónicos, Mobiliário, Serviços).
+-   `aprovacao`: Registo de aprovações/rejeições de usuários e anúncios pelos administradores.
+-   `password_resets`: Tokens para recuperação de senha.
+-   Tabelas de relacionamento (ex: `item_imagem`).
+-   Tabelas de suporte para status (ex: `status_anuncio`, `status_utilizador`).
 
-#### Páginas
-- `HomePage`: Landing page com categorias e produtos em destaque
-- `Login/Register`: Formulários de autenticação
-- `AnuncioForm`: Criação/edição de anúncios
-- `AnuncioDetails`: Detalhes do anúncio com imagens
+A estrutura completa pode ser criada executando `php artisan migrate` após configurar o `.env` e criar a base de dados vazia.
 
-## Funcionalidades Implementadas
+## Endpoints da API
 
-1. **Autenticação**
-   - Registro com validação de dados
-   - Upload de foto de perfil
-   - Login com verificação de status
-   - Aprovação de usuários por admin
+A API RESTful fornece os dados necessários para o frontend. Alguns endpoints principais (prefixo `/api`):
 
-2. **Anúncios**
-   - Criação com múltiplas imagens
-   - Categorização (produto/serviço)
-   - Listagem com filtros
-   - Aprovação por admin
+#### Autenticação (`/auth`)
 
-3. **Landing Page**
-   - Banner principal
-   - Categorias em destaque
-   - Produtos recentes
-   - Busca avançada
+-   `POST /register`: Registo de novo utilizador (com upload de comprovativo).
+-   `POST /login`: Autenticação e obtenção de token JWT.
+-   `POST /logout`: Invalidação do token atual (requer autenticação).
+-   `GET /profile`: Obtenção dos dados do utilizador autenticado (requer autenticação).
+-   `POST /password/forgot`: Solicitação de reset de senha.
+-   `POST /password/reset`: Efetivação do reset de senha com token.
 
-## Próximos Passos
+#### Anúncios (`/anuncios`)
 
-1. **Chat**
-   - Implementar sistema de mensagens entre usuários
-   - Notificações em tempo real
+-   `GET /`: Listar anúncios ativos (com filtros opcionais).
+-   `GET /{id}`: Ver detalhes de um anúncio específico.
+-   `POST /`: Criar novo anúncio (requer autenticação, com upload de imagens).
+-   `PUT /anuncios/{id}`: Atualizar um anúncio existente (requer autenticação e ser o dono).
+-   `DELETE /{id}`: Marcar um anúncio como eliminado (soft delete, requer autenticação e ser o dono).
+-   `GET /categoria/{id}`: Listar anúncios por categoria.
+-   `GET /vendedor/{id}`: Listar anúncios de um vendedor específico.
+-   `GET /procurar?termo={termo}`: Pesquisar anúncios por título ou descrição.
 
-2. **Transações**
-   - Sistema de pagamento
-   - Histórico de compras/vendas
-   - Avaliações
+#### Moradas (`/moradas`)
 
-3. **Sistema de Trocas**
-   - Proposta de troca
-   - Negociação
-   - Avaliação pós-troca
+-   `GET /`: Listar todas as moradas disponíveis para seleção no registo.
+-   `POST /`: (Potencialmente restrito a admin) Adicionar nova morada.
 
-## Configuração
+#### Administração (`/admin`) - *Rotas protegidas para administradores*
 
-1. Clone o repositório
-2. Configure o arquivo `.env` com suas credenciais de banco de dados
-3. Instale as dependências:
-   ```bash
-   composer install    # Backend
-   cd frontend && npm install  # Frontend
-   ```
-4. Inicie os servidores:
-   ```bash
-   php artisan serve         # Backend
-   cd frontend && npm start  # Frontend
-   ```
+-   `GET /usuarios/pendentes`: Listar utilizadores aguardando aprovação.
+-   `POST /usuarios/{id}/aprovar`: Aprovar ou rejeitar um utilizador.
+-   `GET /anuncios/pendentes`: Listar anúncios aguardando aprovação.
+-   `POST /anuncios/{id}/aprovar`: Aprovar ou rejeitar um anúncio.
+-   `GET /dashboard`: Obter estatísticas gerais da plataforma.
+
+**Documentação Completa:** A documentação interativa (se gerada, ex: Swagger) pode estar disponível em `/api/documentation`.
+
+## Testando a API
+
+Pode testar os endpoints da API usando ferramentas como:
+
+1.  **Postman / Insomnia / Thunder Client (Extensão VS Code):**
+    *   Importe o ficheiro `testes_api.json` (se fornecido na raiz) para ter exemplos de requisições prontas.
+    *   Crie requisições manualmente:
+        *   Selecione o método (GET, POST, PUT, DELETE).
+        *   Insira a URL completa (ex: `http://localhost:8000/api/anuncios`).
+        *   Para POST/PUT, defina o `Body` como `form-data` (para uploads) ou `raw` (JSON) e configure os `Headers` (ex: `Accept: application/json`, `Content-Type: application/json`).
+        *   Para rotas protegidas, adicione o Header `Authorization` com o valor `Bearer SEU_TOKEN_JWT`.
+
+2.  **cURL (Linha de Comando):**
+    ```bash
+    # Listar anúncios (GET)
+    curl -X GET http://localhost:8000/api/anuncios
+
+    # Login (POST com JSON)
+    curl -X POST http://localhost:8000/api/auth/login -H "Content-Type: application/json" -H "Accept: application/json" -d '{"Email": "user@example.com", "Password": "password"}'
+
+    # Listar perfil (GET com token)
+    curl -X GET http://localhost:8000/api/auth/profile -H "Authorization: Bearer SEU_TOKEN_JWT" -H "Accept: application/json"
+    ```
+
+3.  **Navegador:**
+    *   Endpoints `GET` que não requerem autenticação podem ser acedidos diretamente no navegador (ex: `http://localhost:8000/api/anuncios`).
+
+**Respostas Esperadas:**
+-   **2xx (Sucesso):** Geralmente `200 OK` ou `201 Created`, com dados em JSON no corpo.
+-   **4xx (Erro do Cliente):** `400 Bad Request` (dados inválidos), `401 Unauthorized` (não autenticado), `403 Forbidden` (sem permissão), `404 Not Found` (recurso não encontrado), `422 Unprocessable Entity` (erro de validação).
+-   **5xx (Erro do Servidor):** Indica um problema no backend. Verifique os logs do Laravel (`storage/logs/laravel.log`).
+
+## Configurações Adicionais
+
+### CORS (Cross-Origin Resource Sharing)
+
+-   Configurado em `config/cors.php`.
+-   Permite que o frontend (`http://localhost:3000`) faça requisições para o backend (`http://localhost:8000`).
+-   A configuração padrão (`'allowed_origins' => ['*']`) é permissiva para desenvolvimento.
+-   **Em produção, restrinja `allowed_origins`** para o domínio do seu frontend (ex: `['https://www.neighbortrade.com']`).
+
+### Armazenamento de Imagens
+
+-   Imagens de perfil e produtos são salvas em `storage/app/public/perfil` e `storage/app/public/produtos`, respetivamente.
+-   O comando `php artisan storage:link` cria um link simbólico de `public/storage` para `storage/app/public`, tornando esses ficheiros acessíveis via web.
+-   Certifique-se de que o servidor web (PHP/Apache/Nginx) tem permissões de escrita nestes diretórios.
+
+## Solução de Problemas Comuns
+
+-   **Erro de conexão DB:** Verifique as credenciais no `.env` e se o MySQL está a correr e a base de dados existe.
+-   **Imagens não aparecem (404):** Garanta que `php artisan storage:link` foi executado com sucesso e verifique as permissões da pasta `storage/app/public`. Verifique se `APP_URL` no `.env` está correto (ex: `APP_URL=http://localhost:8000`).
+-   **Erro "Class not found":** Execute `composer dump-autoload`.
+-   **Erro CORS:** Verifique `config/cors.php`. Limpe caches (`php artisan cache:clear`, `php artisan config:clear`, cache do navegador).
+
+## Próximas Funcionalidades
+
+-   [ ] **Sistema de Chat:** Comunicação em tempo real entre utilizadores interessados em anúncios.
+-   [ ] **Sistema de Trocas:** Funcionalidade para propor e negociar trocas de produtos/serviços.
+-   [ ] **Sistema de Avaliações:** Permitir que utilizadores avaliem vendedores/compradores após uma transação/troca.
+-   [ ] **Notificações:** Avisos sobre novas mensagens, propostas, aprovações, etc.
+-   [ ] **Pagamentos:** Integração com gateway de pagamento para transações monetárias seguras (opcional).
+-   [ ] **Melhorias de UI/UX:** Refinamento da interface e experiência do utilizador.
 
 ## Contribuição
 
-Para contribuir:
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature
-3. Faça commit das alterações
-4. Faça push para a branch
-5. Abra um Pull Request
+Contribuições são bem-vindas! Siga estes passos:
 
-## Configuração do Ambiente de Desenvolvimento
+1.  Faça um **Fork** do repositório.
+2.  Crie uma nova **Branch** para a sua funcionalidade ou correção:
+    ```bash
+    git checkout -b feature/nome-da-sua-feature # ou fix/descricao-do-bug
+    ```
+3.  Faça as suas alterações e **Commit**:
+    ```bash
+    git add .
+    git commit -m "feat: Adiciona funcionalidade X" # ou "fix: Corrige problema Y"
+    ```
+4.  Faça **Push** para a sua branch no seu fork:
+    ```bash
+    git push origin feature/nome-da-sua-feature
+    ```
+5.  Abra um **Pull Request** no repositório original, descrevendo as suas alterações.
 
-### Requisitos Prévios
+## Extensões VS Code Recomendadas
 
-1. [XAMPP](https://www.apachefriends.org/download.html) - Servidor local Apache e MySQL
-2. [Composer](https://getcomposer.org/download/) - Gestor de dependências PHP
-3. [Node.js](https://nodejs.org/) - Ambiente de execução JavaScript
-4. [Git](https://git-scm.com/downloads) - Sistema de controlo de versões
+Para facilitar o desenvolvimento, considere instalar estas extensões no Visual Studio Code:
 
-### Configuração Passo a Passo
+**Geral & Utilidades:**
+-   `eamodio.gitlens`: Superpoderes para o Git (blame, histórico).
+-   `mhutchie.git-graph`: Visualização gráfica do histórico Git.
+-   `mikestead.dotenv`: Destaque de sintaxe para ficheiros `.env`.
+-   `christian-kohler.path-intellisense`: Autocompletar caminhos de ficheiros.
+-   `formulahendry.auto-rename-tag`: Renomeia tags HTML/XML automaticamente.
+-   `rangav.vscode-thunder-client`: Cliente REST API dentro do VS Code (alternativa ao Postman).
+-   `PKief.material-icon-theme`: Ícones para ficheiros e pastas.
+-   `zhuangtongfa.material-theme` ou `dracula-theme.theme-dracula`: Temas populares.
 
-1. **Clonar o Projeto na pasta C:\xampp\htdocs**
-```bash
-git clone https://github.com/ipca-pedro/NeighborTrade
-cd NT
-```
+**PHP/Laravel (Backend):**
+-   `bmewburn.vscode-intelephense-client`: IntelliSense avançado para PHP.
+-   `xdebug.php-debug`: Debugging PHP com Xdebug.
+-   `MehediDracula.php-namespace-resolver`: Importa e organiza namespaces PHP.
+-   `neilbrayfield.php-docblocker`: Gera blocos de documentação PHPDoc.
+-   `onecentlin.laravel-blade`: Snippets e formatação para Blade.
+-   `shufo.vscode-blade-formatter`: Formatador para ficheiros Blade.
 
-2. **Configurar Base de Dados**
-- Iniciar Apache e MySQL no Painel de Controlo do XAMPP
-- Aceder ao http://localhost/phpmyadmin
-- Criar uma nova base de dados com o nome 'nt'
+**JavaScript/React (Frontend):**
+-   `dbaeumer.vscode-eslint`: Integração com ESLint para linting de JS/TS.
+-   `esbenp.prettier-vscode`: Formatador de código automático (requer configuração).
+-   `dsznajder.es7-react-js-snippets`: Snippets úteis para React/Redux/JS moderno.
 
-3. **Configurar Backend (Laravel)**
-```bash
-# Instalar dependências PHP
-composer install
+**Banco de Dados:**
+-   `mtxr.sqltools`: Cliente SQL genérico.
+-   `mtxr.sqltools-driver-mysql`: Driver MySQL para SQLTools.
 
-# Copiar e configurar ficheiro de ambiente
-cp .env.example .env
+**Como Instalar:**
+-   Abra o VS Code.
+-   Vá à aba de Extensões (ícone de quadrados no lado esquerdo ou `Ctrl+Shift+X`).
+-   Pesquise pelo nome ou ID da extensão e clique em "Install".
 
-# Configurar .env com os dados da base de dados:
-DB_DATABASE=nt
-DB_USERNAME=root
-DB_PASSWORD=
+---
 
-# Gerar chave da aplicação
-php artisan key:generate
-
-# Criar ligação simbólica para armazenamento
-php artisan storage:link
-
-# Executar migrações da base de dados
-php artisan migrate
-```
-
-4. **Configurar Frontend (React)**
-```bash
-# Criar e aceder à pasta do frontend
-cd frontend
-
-# Instalar dependências base do React
-npm install
-
-# Instalar pacotes necessários:
-
-# react-router-dom - Gestão de rotas
-npm install react-router-dom
-
-# react-bootstrap e bootstrap - Interface gráfica
-npm install react-bootstrap bootstrap
-
-# axios - Cliente HTTP para chamadas à API
-npm install axios
-```
-
-5. **Iniciar a Aplicação**
-
-Abrir dois terminais separados e executar:
-```bash
-# Terminal 1 - Servidor Laravel (Backend)
-cd NT
-php artisan serve
-
-# Terminal 2 - Servidor React (Frontend)
-cd NT/frontend
-npm start
-```
-
-A aplicação estará disponível em:
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
-
-### Estrutura do Projeto
-
-#### Backend (Laravel)
-- `app/`
-  - `Http/Controllers/` - Controladores da aplicação
-  - `Models/` - Modelos da base de dados
-  - `storage/app/public/comprovativos/` - Ficheiros de comprovativos de morada
-
-#### Frontend (React)
-- `frontend/`
-  - `src/`
-    - `components/`
-      - `auth/` - Componentes de autenticação (Login e Registo)
-      - `layout/` - Componentes de estrutura (Navbar, etc)
-    - `services/` - Serviços e chamadas à API
-    - `App.js` - Componente principal e rotas
-
-### Pacotes e Dependências
-
-#### Backend (Laravel)
-- **Laravel Framework** (^10.0)
-  - Framework PHP para desenvolvimento web
-  - Inclui sistema de rotas, ORM Eloquent, etc
-
-- **Laravel Sanctum** (^3.2)
-  - Sistema de autenticação via tokens
-  - Proteção de rotas da API
-
-#### Frontend (React)
-
-1. **Pacotes Base**
-   - `react` (^18.2.0)
-     - Biblioteca principal do React
-   - `react-dom` (^18.2.0)
-     - Renderização do React no navegador
-
-2. **Gestão de Rotas**
-   - `react-router-dom` (^6.0.0)
-     - Navegação entre páginas
-     - Proteção de rotas
-     - Redirecionamentos
-
-3. **Interface Gráfica**
-   - `react-bootstrap` (^2.0.0)
-     - Componentes Bootstrap para React
-     - Formulários, botões, alertas, etc
-   - `bootstrap` (^5.0.0)
-     - Framework CSS para estilos
-
-4. **Chamadas à API**
-   - `axios` (^1.0.0)
-     - Cliente HTTP para comunicação com backend
-     - Gestão de headers e tokens
-     - Upload de ficheiros
-
-### Funcionalidades
-
-#### Sistema de Autenticação
-1. **Registo de Utilizador**
-   - Formulário completo com validação
-   - Upload de comprovativo de morada
-   - Pré-visualização de imagens
-   - Criação automática de conta
-
-2. **Login**
-   - Autenticação segura
-   - Gestão de tokens JWT
-   - Armazenamento em localStorage
-
-3. **Proteção de Rotas**
-   - Frontend: Redirecionamento automático
-   - Backend: Middleware de autenticação
-
-#### Armazenamento de Ficheiros
-- Suporte para imagens (JPEG, PNG) e PDF
-- Validação de tipos e tamanhos
-- Armazenamento seguro no servidor
-- Nomes únicos para evitar conflitos
-
-### Endpoints da API
-
-#### Autenticação
-- `POST /api/auth/login`
-  - Login do utilizador
-  - Recebe: `{ Email, Password }`
-  - Retorna: Token e dados do utilizador
-
-- `POST /api/auth/register`
-  - Registo de novo utilizador
-  - Recebe: Formulário multipart com dados e ficheiro
-  - Retorna: Token e dados do utilizador
-
-- `POST /api/auth/logout`
-  - Terminar sessão
-  - Requer: Token de autenticação
-  - Retorna: Mensagem de sucesso
-
-- `GET /api/auth/me`
-  - Dados do utilizador atual
-  - Requer: Token de autenticação
-  - Retorna: Dados completos do utilizador
-
-### Contribuição
-
-1. Crie uma branch para sua feature
-```bash
-git checkout -b feature/nome-da-feature
-```
-
-2. Faça commit das mudanças
-```bash
-git add .
-git commit -m "Descrição das mudanças"
-```
-
-3. Faça push para o repositório
-```bash
-git push origin feature/nome-da-feature
-```
-
-4. Crie um Pull Request
+*Nota de Segurança: Incluir o ficheiro `.env` diretamente no controlo de versão (Git) não é uma prática recomendada, pois pode expor informações sensíveis como senhas e chaves de API. Para projetos futuros ou públicos, é fortemente aconselhável adicionar o ficheiro `.env` ao seu `.gitignore` e fornecer um ficheiro `.env.example` como modelo para que cada desenvolvedor configure o seu próprio ambiente.*
